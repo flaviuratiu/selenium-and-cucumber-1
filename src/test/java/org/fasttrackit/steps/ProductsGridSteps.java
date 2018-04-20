@@ -62,7 +62,17 @@ public class ProductsGridSteps extends TestBase {
     }
 
     @Then("^products are sorted by \"([^\"]*)\" in (.+) order$")
-    public void productsAreSortedByInDescendingOrder(String criteria, String sortDirection) {
+    public void productsAreSortedByInDescendingOrder(String criteria, String sortDirection) throws Exception {
+        if (criteria.equals("Price")) {
+            verifySortingByPrice(sortDirection);
+        } else if (criteria.equals("Name")) {
+            verifySortingByName(sortDirection);
+        } else {
+            throw new Exception("Step implemented only for Price and Name criteria");
+        }
+    }
+
+    private void verifySortingByPrice(String sortDirection) {
         List<Double> actualPrices = new ArrayList<>();
 
         for (WebElement priceContainer : productsGrid.getProductPrices()) {
@@ -79,7 +89,6 @@ public class ProductsGridSteps extends TestBase {
 
         List<Double> sortedPrices = new ArrayList<>(actualPrices);
 
-        // todo: extract the comparator to a separate method and make it work with Strings as well
         Comparator<Double> comparator;
 
         if (sortDirection.equals("descending")) {
@@ -92,4 +101,30 @@ public class ProductsGridSteps extends TestBase {
 
         assertThat("Products are not sorted correctly.", actualPrices, equalTo(sortedPrices));
     }
+
+    private void verifySortingByName(String sortDirection) {
+        List<String> actualNames = new ArrayList<>();
+
+        for (WebElement nameContainer : productsGrid.getProductNames()) {
+            String name = nameContainer.getText();
+
+            actualNames.add(name);
+        }
+
+        List<String> sortedNames = new ArrayList<>(actualNames);
+
+        Comparator<String> comparator;
+
+        if (sortDirection.equals("descending")) {
+            comparator = Comparator.reverseOrder();
+        } else {
+            comparator = Comparator.naturalOrder();
+        }
+
+        sortedNames.sort(comparator);
+
+        assertThat("Products are not sorted correctly.", actualNames, equalTo(sortedNames));
+    }
+
+
 }

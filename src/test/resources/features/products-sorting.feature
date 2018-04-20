@@ -12,5 +12,5 @@ Feature: Products Sorting
 
     Examples:
       | keyword | sort criteria | sort direction |
-      | vase    | Price         | descending     |
+      | vase    | Prices        | descending     |
       | shirt   | Name          | ascending      |
